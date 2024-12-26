@@ -1,0 +1,130 @@
+import java.util.*;
+
+class Account {
+    private int accountNumber;
+    private String accountHolder;
+    private String pin;
+    private double balance;
+
+    public Account(int accountNumber, String accountHolder, String pin, double initialBalance) {
+        this.accountNumber = accountNumber;
+        this.accountHolder = accountHolder;
+        this.pin = pin;
+        this.balance = initialBalance;
+    }
+
+    public int getAccountNumber() {
+        return accountNumber;
+    }
+
+    public String getAccountHolder() {
+        return accountHolder;
+    }
+
+    public boolean authenticate(String inputPin) {
+        return this.pin.equals(inputPin);
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            System.out.println("Deposit successful. Updated balance: " + balance);
+        } else {
+            System.out.println("Invalid deposit amount.");
+        }
+    }
+
+    public void withdraw(double amount) {
+        if (amount > 0 && amount <= balance) {
+            balance -= amount;
+            System.out.println("Withdrawal successful. Updated balance: " + balance);
+        } else {
+            System.out.println("Invalid withdrawal amount or insufficient balance.");
+        }
+    }
+}
+
+class ATM {
+    private Map<Integer, Account> accounts;
+
+    public ATM() {
+        accounts = new HashMap<>();
+    }
+
+    public void addAccount(Account account) {
+        accounts.put(account.getAccountNumber(), account);
+    }
+
+    public Account authenticate(int accountNumber, String pin) {
+        Account account = accounts.get(accountNumber);
+        if (account != null && account.authenticate(pin)) {
+            return account;
+        }
+        return null;
+    }
+}
+
+public class ATMSimulation {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        ATM atm = new ATM();
+
+        // Adding some accounts for simulation
+        atm.addAccount(new Account(1001, "John Doe", "1234", 5000));
+        atm.addAccount(new Account(1002, "Jane Smith", "5678", 3000));
+
+        System.out.println("Welcome to the ATM Simulation");
+
+        while (true) {
+            System.out.print("\nEnter account number: ");
+            int accountNumber = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            System.out.print("Enter PIN: ");
+            String pin = scanner.nextLine();
+
+            Account currentAccount = atm.authenticate(accountNumber, pin);
+            if (currentAccount == null) {
+                System.out.println("Invalid account number or PIN. Please try again.");
+                continue;
+            }
+
+            System.out.println("Welcome, " + currentAccount.getAccountHolder());
+
+            int choice;
+            do {
+                System.out.println("\n1. Check Balance");
+                System.out.println("2. Deposit Money");
+                System.out.println("3. Withdraw Money");
+                System.out.println("4. Exit");
+                System.out.print("Enter your choice: ");
+                choice = scanner.nextInt();
+
+                switch (choice) {
+                    case 1:
+                        System.out.println("Your current balance is: " + currentAccount.getBalance());
+                        break;
+                    case 2:
+                        System.out.print("Enter amount to deposit: ");
+                        double depositAmount = scanner.nextDouble();
+                        currentAccount.deposit(depositAmount);
+                        break;
+                    case 3:
+                        System.out.print("Enter amount to withdraw: ");
+                        double withdrawalAmount = scanner.nextDouble();
+                        currentAccount.withdraw(withdrawalAmount);
+                        break;
+                    case 4:
+                        System.out.println("Thank you for using the ATM. Goodbye!");
+                        break;
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
+                }
+            } while (choice != 4);
+        }
+    }
+}
