@@ -1,0 +1,127 @@
+import java.util.*;
+
+class Message {
+    private String sender;
+    private String content;
+    private Date timestamp;
+
+    public Message(String sender, String content) {
+        this.sender = sender;
+        this.content = content;
+        this.timestamp = new Date();
+    }
+
+    public String getSender() {
+        return sender;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + timestamp + "] " + sender + ": " + content;
+    }
+}
+
+class ChatRoom {
+    private List<Message> messages;
+    private Set<String> participants;
+
+    public ChatRoom() {
+        messages = new ArrayList<>();
+        participants = new HashSet<>();
+    }
+
+    public void join(String username) {
+        if (participants.add(username)) {
+            System.out.println(username + " joined the chat.");
+        } else {
+            System.out.println(username + " is already in the chat.");
+        }
+    }
+
+    public void leave(String username) {
+        if (participants.remove(username)) {
+            System.out.println(username + " left the chat.");
+        } else {
+            System.out.println(username + " is not in the chat.");
+        }
+    }
+
+    public void sendMessage(String sender, String content) {
+        if (participants.contains(sender)) {
+            Message message = new Message(sender, content);
+            messages.add(message);
+            System.out.println("Message sent by " + sender);
+        } else {
+            System.out.println(sender + " is not in the chat. Cannot send message.");
+        }
+    }
+
+    public void showChatHistory() {
+        System.out.println("\nChat History:");
+        if (messages.isEmpty()) {
+            System.out.println("No messages yet.");
+        } else {
+            for (Message message : messages) {
+                System.out.println(message);
+            }
+        }
+    }
+}
+
+public class ChatApplication {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        ChatRoom chatRoom = new ChatRoom();
+
+        System.out.println("Welcome to the Chat Application!");
+        int choice;
+        do {
+            System.out.println("\n1. Join Chat");
+            System.out.println("2. Leave Chat");
+            System.out.println("3. Send Message");
+            System.out.println("4. View Chat History");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+            choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter your username: ");
+                    String username = scanner.nextLine();
+                    chatRoom.join(username);
+                    break;
+                case 2:
+                    System.out.print("Enter your username: ");
+                    String userToLeave = scanner.nextLine();
+                    chatRoom.leave(userToLeave);
+                    break;
+                case 3:
+                    System.out.print("Enter your username: ");
+                    String sender = scanner.nextLine();
+                    System.out.print("Enter your message: ");
+                    String message = scanner.nextLine();
+                    chatRoom.sendMessage(sender, message);
+                    break;
+                case 4:
+                    chatRoom.showChatHistory();
+                    break;
+                case 5:
+                    System.out.println("Exiting the chat application. Goodbye!");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        } while (choice != 5);
+
+        scanner.close();
+    }
+}
